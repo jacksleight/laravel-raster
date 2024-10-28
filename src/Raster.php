@@ -37,11 +37,6 @@ class Raster implements Responsable, Stringable
 
     protected static Closure $browsershot;
 
-    public static function browsershot(Closure $browsershot): void
-    {
-        static::$browsershot = $browsershot;
-    }
-
     public function __construct(string $name, array $data = [], ?Request $request = null)
     {
         $this->name = $name;
@@ -359,5 +354,10 @@ class Raster implements Responsable, Stringable
 extract(\$__raster_data);
 unset(\$__raster_data);
 ?>";
+    }
+
+    public static function browsershot(Closure $browsershot): void
+    {
+        static::$browsershot = $browsershot;
     }
 }
