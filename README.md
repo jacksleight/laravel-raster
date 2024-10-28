@@ -150,7 +150,7 @@ In preview mode the HTML will be returned from the response but with all the app
 
 ## Security & URL Signing
 
-Only views that implement the `@raster` directive can be rasterized in simple mode, and an error will be thrown before execution if they don't, however it's also recommended to enable URL signing on production to ensure they can't be tampered with. You can do this by setting the `RASTER_SIGN_URLS` .env var to `true`.
+Only views that implement the `@raster` directive can be rasterized in simple mode, an error will be thrown before execution if they don't. It's also recommended to enable URL signing on production to ensure they can't be tampered with. You can do this by setting the `RASTER_SIGN_URLS` .env var to `true`.
 
 ## Customising Browsershot
 

@@ -152,13 +152,11 @@ class Raster implements Responsable, Stringable
         $renderImage = fn () => $this->renderImage($html);
 
         $cacheKey = $this->cacheKey();
-        $cacheStore = config('raster.cache_store');
+        $cacheStore = Cache::store(config('raster.cache_store'));
         if ($this->cache === true) {
-            return Cache::store($cacheStore)
-                ->rememberForever($cacheKey, $renderImage);
+            return $cacheStore->rememberForever($cacheKey, $renderImage);
         } elseif (is_int($this->cache)) {
-            return Cache::store($cacheStore)
-                ->remember($cacheKey, $this->cache, $renderImage);
+            return $cacheStore->remember($cacheKey, $this->cache, $renderImage);
         }
 
         return $renderImage();
