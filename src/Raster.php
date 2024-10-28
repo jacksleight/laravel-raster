@@ -350,9 +350,11 @@ class Raster implements Responsable, Stringable
 
         return "<?php
 /* {$fingerprint} */
-\$__raster_data = (\$raster ?? null) instanceof \JackSleight\LaravelRaster\Raster ? \$raster->inject({$expression}) : [];
-extract(\$__raster_data);
-unset(\$__raster_data);
+if ((\$raster ?? null) instanceof \JackSleight\LaravelRaster\Raster) {
+    \$__raster_data = \$raster->inject({$expression});
+    extract(\$__raster_data);
+    unset(\$__raster_data);
+}
 ?>";
     }
 
