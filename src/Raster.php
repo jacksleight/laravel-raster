@@ -5,6 +5,7 @@ namespace JackSleight\LaravelRaster;
 use Closure;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
@@ -19,13 +20,16 @@ class Raster implements Responsable, Stringable
 {
     protected string $name;
 
+    /**
+     * @var array<mixed>
+     */
     protected array $data = [];
 
     protected ?Request $request;
 
-    protected int $width;
+    protected ?int $width;
 
-    protected int $basis;
+    protected ?int $basis;
 
     protected int $scale = 1;
 
@@ -37,6 +41,9 @@ class Raster implements Responsable, Stringable
 
     protected static Closure $browsershot;
 
+    /**
+     * @param  array<mixed>  $data
+     */
     public function __construct(string $name, array $data = [], ?Request $request = null)
     {
         $this->name = $name;
@@ -49,10 +56,14 @@ class Raster implements Responsable, Stringable
         return $this->name;
     }
 
-    public function data(array|Closure|null $data = null): static|array
+    /**
+     * @param  array<mixed>|null  $data
+     * @return static|array<mixed>
+     */
+    public function data(?array $data = null): static|array
     {
         if (func_num_args() > 0) {
-            $this->data = $data;
+            $this->data = $data ?? [];
 
             return $this;
         }
@@ -60,7 +71,7 @@ class Raster implements Responsable, Stringable
         return $this->data;
     }
 
-    public function width(?int $width = null): static|int
+    public function width(?int $width = null): static|int|null
     {
         if (func_num_args() > 0) {
             $this->width = $width;
@@ -71,7 +82,7 @@ class Raster implements Responsable, Stringable
         return $this->width;
     }
 
-    public function basis(?int $basis = null): static|int
+    public function basis(?int $basis = null): static|int|null
     {
         if (func_num_args() > 0) {
             $this->basis = $basis;
@@ -85,7 +96,7 @@ class Raster implements Responsable, Stringable
     public function scale(?int $scale = null): static|int
     {
         if (func_num_args() > 0) {
-            $this->scale = $scale;
+            $this->scale = $scale ?? 1;
 
             return $this;
         }
@@ -96,7 +107,7 @@ class Raster implements Responsable, Stringable
     public function type(?string $type = null): static|string
     {
         if (func_num_args() > 0) {
-            $this->type = $type;
+            $this->type = $type ?? 'png';
 
             return $this;
         }
@@ -107,7 +118,7 @@ class Raster implements Responsable, Stringable
     public function preview(?bool $preview = null): static|bool
     {
         if (func_num_args() > 0) {
-            $this->preview = $preview;
+            $this->preview = $preview ?? false;
 
             return $this;
         }
@@ -118,7 +129,7 @@ class Raster implements Responsable, Stringable
     public function cache(bool|int|null $cache = null): static|bool|int|null
     {
         if (func_num_args() > 0) {
-            $this->cache = $cache;
+            $this->cache = $cache ?? false;
 
             return $this;
         }
@@ -126,7 +137,7 @@ class Raster implements Responsable, Stringable
         return $this->cache;
     }
 
-    public function render()
+    public function render(): string
     {
         if ($this->isAutomaticMode() && ! $this->hasFingerprint()) {
             throw new \Exception('View must implement raster directive');
@@ -157,7 +168,7 @@ class Raster implements Responsable, Stringable
         return $renderImage();
     }
 
-    protected function renderHtml()
+    protected function renderHtml(): string
     {
         $layout = config('raster.layout');
 
@@ -168,7 +179,10 @@ class Raster implements Responsable, Stringable
         return $html;
     }
 
-    protected function renderView($name, $data, $slot = null)
+    /**
+     * @param  array<mixed>  $data
+     */
+    protected function renderView(string $name, array $data, ?string $slot = null): string
     {
         if (Str::before($name, '.') === 'components') {
             return Blade::render(<<<'HTML'
@@ -192,15 +206,15 @@ class Raster implements Responsable, Stringable
             ]);
         }
 
-        return view($name, $data);
+        return view($name, $data)->render();
     }
 
-    protected function renderPreview($html)
+    protected function renderPreview(string $html): string
     {
         return $html.'<style>'.$this->makeStyle(true).'</style>';
     }
 
-    protected function renderImage($html)
+    protected function renderImage(string $html): string
     {
         $browsershot = static::$browsershot ?? fn ($browsershot) => $browsershot;
 
@@ -215,7 +229,7 @@ class Raster implements Responsable, Stringable
             ->screenshot();
     }
 
-    public function makeStyle($preview = false)
+    public function makeStyle(bool $preview = false): string
     {
         $fontSize = isset($this->basis)
             ? 16 * $this->width / $this->basis
@@ -229,9 +243,9 @@ class Raster implements Responsable, Stringable
         ]))->join(' ');
     }
 
-    protected function hasFingerprint()
+    protected function hasFingerprint(): bool
     {
-        $path = view()->getFinder()->find($this->name);
+        $path = View::getFinder()->find($this->name);
 
         if (! Str::endsWith($path, '.blade.php')) {
             throw new \Exception('View must be a blade file');
@@ -243,7 +257,7 @@ class Raster implements Responsable, Stringable
         return Str::contains($string, static::fingerprint());
     }
 
-    public function toResponse($request)
+    public function toResponse($request): Response
     {
         $data = $this->render();
 
@@ -257,7 +271,7 @@ class Raster implements Responsable, Stringable
         return response($data)->header('Content-Type', $mime);
     }
 
-    public function toUrl()
+    public function toUrl(): string
     {
         $params = [
             'name' => $this->name,
@@ -280,7 +294,7 @@ class Raster implements Responsable, Stringable
             : route('laravel-raster.render', $params);
     }
 
-    protected function cacheKey()
+    protected function cacheKey(): string
     {
         $params = [
             'name' => $this->name,
@@ -295,14 +309,18 @@ class Raster implements Responsable, Stringable
         return 'laravel-raster.'.md5(serialize($params));
     }
 
-    public function __toString()
+    public function __toString(): string
     {
         return $this->toUrl();
     }
 
+    /**
+     * @param  array<mixed>  $args
+     * @return array<mixed>
+     */
     public function inject(...$args): array
     {
-        if ($this->isManualMode()) {
+        if (! isset($this->request)) {
             return [];
         }
 
@@ -344,7 +362,7 @@ class Raster implements Responsable, Stringable
         return '__raster_'.hash('sha1', __FILE__).'__';
     }
 
-    public static function compile($expression): string
+    public static function compile(string $expression): string
     {
         $fingerprint = static::fingerprint();
 

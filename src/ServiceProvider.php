@@ -7,7 +7,7 @@ use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
-    public function boot()
+    public function boot(): void
     {
         Blade::directive('raster', function ($expression) {
             return Raster::compile($expression);

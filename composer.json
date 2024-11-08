@@ -19,5 +19,14 @@
         "php": "^8.1|^8.2|^8.3",
         "laravel/framework": "^10.0|^11.0",
         "spatie/browsershot": "^4.3"
+    },
+    "require-dev": {
+        "pestphp/pest": "^3.5",
+        "phpstan/phpstan": "^1.12"
+    },
+    "config": {
+        "allow-plugins": {
+            "pestphp/pest-plugin": true
+        }
     }
 }
