@@ -10,7 +10,7 @@ class ServiceProvider extends BaseServiceProvider
     public function boot(): void
     {
         Blade::directive('raster', function ($expression) {
-            return Raster::compile($expression);
+            return BladeHandler::compile($expression);
         });
 
         $this->publishes([

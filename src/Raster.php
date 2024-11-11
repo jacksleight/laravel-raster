@@ -6,19 +6,20 @@ use Closure;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
-use Illuminate\View\ComponentAttributeBag;
-use Illuminate\View\ComponentSlot;
 use Spatie\Browsershot\Browsershot;
 use Stringable;
 
 class Raster implements Responsable, Stringable
 {
     protected string $name;
+
+    protected string $path;
+
+    protected BaseHandler $handler;
 
     /**
      * @var array<mixed>
@@ -41,6 +42,10 @@ class Raster implements Responsable, Stringable
 
     protected static Closure $browsershot;
 
+    protected static $handlers = [
+        'blade.php' => BladeHandler::class,
+    ];
+
     /**
      * @param  array<mixed>  $data
      */
@@ -49,11 +54,24 @@ class Raster implements Responsable, Stringable
         $this->name = $name;
         $this->data = $data;
         $this->request = $request;
+
+        $this->path = View::getFinder()->find($this->name);
+
+        $extension = Str::after($this->path, '.');
+        if (! $handler = static::$handlers[$extension] ?? null) {
+            throw new \Exception('Unsupported view type: '.$extension);
+        }
+        $this->handler = new $handler($this);
     }
 
     public function name(): string
     {
         return $this->name;
+    }
+
+    public function path(): string
+    {
+        return $this->path;
     }
 
     /**
@@ -140,9 +158,9 @@ class Raster implements Responsable, Stringable
     public function render(): string
     {
         if ($this->isAutomaticMode() && ! $this->hasFingerprint()) {
-            throw new \Exception('View must implement raster directive');
+            throw new \Exception('View must implement raster');
         } elseif ($this->isManualMode() && $this->hasFingerprint()) {
-            throw new \Exception('View must not implement raster directive');
+            throw new \Exception('View must not implement raster');
         }
 
         $html = $this->renderHtml();
@@ -170,43 +188,7 @@ class Raster implements Responsable, Stringable
 
     protected function renderHtml(): string
     {
-        $layout = config('raster.layout');
-
-        View::share('raster', $this);
-        $html = $this->renderView($layout, [], $this->renderView($this->name, $this->data));
-        View::share('raster', null);
-
-        return $html;
-    }
-
-    /**
-     * @param  array<mixed>  $data
-     */
-    protected function renderView(string $name, array $data, ?string $slot = null): string
-    {
-        if (Str::before($name, '.') === 'components') {
-            return Blade::render(<<<'HTML'
-                <x-dynamic-component :component="$name" :attributes="$data">
-                    {{ $slot }}
-                </x-dynamic-component>
-            HTML, [
-                'name' => Str::after($name, 'components.'),
-                'data' => new ComponentAttributeBag($data),
-                'slot' => new ComponentSlot($slot ?? ''),
-            ]);
-        }
-
-        if ($slot) {
-            return Blade::render(<<<'HTML'
-                @extends($name, $data)
-                @section('slot', $slot)
-            HTML, [
-                'name' => $name,
-                'data' => $data,
-            ]);
-        }
-
-        return view($name, $data)->render();
+        return $this->handler->renderHtml($this->name, $this->data);
     }
 
     protected function renderPreview(string $html): string
@@ -245,16 +227,7 @@ class Raster implements Responsable, Stringable
 
     protected function hasFingerprint(): bool
     {
-        $path = View::getFinder()->find($this->name);
-
-        if (! Str::endsWith($path, '.blade.php')) {
-            throw new \Exception('View must be a blade file');
-        }
-
-        $compiler = app('blade.compiler');
-        $string = $compiler->compileString(file_get_contents($path));
-
-        return Str::contains($string, static::fingerprint());
+        return $this->handler->hasFingerprint($this->path);
     }
 
     public function toResponse($request): Response
@@ -337,10 +310,7 @@ class Raster implements Responsable, Stringable
                 'cache',
             ]);
 
-        $data = $params['data'] ?? null;
-        if ($data instanceof Closure) {
-            $params['data'] = app()->call($data, $input['data'] ?? []);
-        }
+        $params['data'] = $this->handler->resolveData($params['data'] ?? null, $input['data'] ?? []);
 
         $params->each(fn ($value, $name) => $this->{$name}($value));
 
@@ -357,27 +327,13 @@ class Raster implements Responsable, Stringable
         return ! isset($this->request);
     }
 
-    public static function fingerprint(): string
-    {
-        return '__raster_'.hash('sha1', __FILE__).'__';
-    }
-
-    public static function compile(string $expression): string
-    {
-        $fingerprint = static::fingerprint();
-
-        return "<?php
-/* {$fingerprint} */
-if ((\$raster ?? null) instanceof \JackSleight\LaravelRaster\Raster) {
-    \$__raster_data = \$raster->inject({$expression});
-    extract(\$__raster_data);
-    unset(\$__raster_data);
-}
-?>";
-    }
-
     public static function browsershot(Closure $browsershot): void
     {
         static::$browsershot = $browsershot;
+    }
+
+    public static function handler(string $extension, string $class): void
+    {
+        static::$handlers[$extension] = $class;
     }
 }
