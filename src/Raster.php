@@ -74,6 +74,11 @@ class Raster implements Responsable, Stringable
         return $this->path;
     }
 
+    public function request(): Request
+    {
+        return $this->request;
+    }
+
     /**
      * @param  array<mixed>|null  $data
      * @return static|array<mixed>
@@ -291,38 +296,17 @@ class Raster implements Responsable, Stringable
      * @param  array<mixed>  $args
      * @return array<mixed>
      */
-    public function inject(...$args): array
+    public function injectParams(...$params): array
     {
-        if (! isset($this->request)) {
-            return [];
-        }
-
-        $input = $this->request->all();
-        $params = collect($input)
-            ->merge($args)
-            ->only([
-                'data',
-                'width',
-                'basis',
-                'scale',
-                'type',
-                'preview',
-                'cache',
-            ]);
-
-        $params['data'] = $this->handler->resolveData($params['data'] ?? null, $input['data'] ?? []);
-
-        $params->each(fn ($value, $name) => $this->{$name}($value));
-
-        return $this->data;
+        return $this->handler->injectParams($params);
     }
 
-    protected function isAutomaticMode(): bool
+    public function isAutomaticMode(): bool
     {
         return isset($this->request);
     }
 
-    protected function isManualMode(): bool
+    public function isManualMode(): bool
     {
         return ! isset($this->request);
     }

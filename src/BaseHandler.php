@@ -18,5 +18,5 @@ abstract class BaseHandler
 
     abstract public function hasFingerprint(): bool;
 
-    abstract public function resolveData(mixed $resolver, array $data): array;
+    abstract public function injectParams(array $params): array;
 }

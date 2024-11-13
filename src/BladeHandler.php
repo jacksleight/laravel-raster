@@ -16,7 +16,7 @@ class BladeHandler extends BaseHandler
      */
     public function renderHtml(): string
     {
-        $layout = config('raster.layout');
+        $layout = config('raster.layout') ?? 'components.layouts.raster';
 
         View::share('raster', $this->raster);
         $html = $this->renderView($layout, [], $this->renderView($this->raster->name(), $this->raster->data()));
@@ -74,11 +74,41 @@ class BladeHandler extends BaseHandler
      */
     public function resolveData(mixed $data, array $input): array
     {
-        if ($data instanceof Closure) {
-            $data = app()->call($data, $input);
-        }
 
         return $data;
+    }
+
+    /**
+     * @param  array<mixed>  $args
+     * @return array<mixed>
+     */
+    public function injectParams($params): array
+    {
+        if (! $this->raster->isAutomaticMode()) {
+            return [];
+        }
+
+        $input = $this->raster->request()->all();
+        $params = collect($input)
+            ->merge($params)
+            ->only([
+                'data',
+                'width',
+                'basis',
+                'scale',
+                'type',
+                'preview',
+                'cache',
+            ]);
+
+        $data = $params['data'] ?? null;
+        if ($data instanceof Closure) {
+            $params['data'] = app()->call($data, $input['data'] ?? []);
+        }
+
+        $params->each(fn ($value, $name) => $this->raster->{$name}($value));
+
+        return $this->raster->data();
     }
 
     public static function compile(string $expression): string
@@ -88,7 +118,7 @@ class BladeHandler extends BaseHandler
         return "<?php
 /* {$uniqueString} */
 if ((\$raster ?? null) instanceof \JackSleight\LaravelRaster\Raster) {
-    \$__raster_data = \$raster->inject({$expression});
+    \$__raster_data = \$raster->injectParams({$expression});
     extract(\$__raster_data);
     unset(\$__raster_data);
 }

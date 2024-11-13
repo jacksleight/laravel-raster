@@ -9,10 +9,6 @@ class ServiceProvider extends BaseServiceProvider
 {
     public function boot(): void
     {
-        Blade::directive('raster', function ($expression) {
-            return BladeHandler::compile($expression);
-        });
-
         $this->publishes([
             __DIR__.'/../config/raster.php' => config_path('raster.php'),
         ], 'raster-config');
@@ -22,5 +18,9 @@ class ServiceProvider extends BaseServiceProvider
         );
 
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
+        Blade::directive('raster', function ($expression) {
+            return BladeHandler::compile($expression);
+        });
     }
 }
