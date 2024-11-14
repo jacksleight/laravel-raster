@@ -252,9 +252,9 @@ class Raster implements Responsable, Stringable
 
     protected function renderImage(string $html): string
     {
-        $browsershot = static::$browsershot ?? fn ($browsershot) => $browsershot;
+        $callback = static::$browsershot ?? fn ($browsershot) => $browsershot;
 
-        return $browsershot(new Browsershot)
+        return $callback(new Browsershot)
             ->setHtml($html)
             ->setOption('addStyleTag', json_encode(['content' => $this->makeStyle()]))
             ->deviceScaleFactor($this->scale)
