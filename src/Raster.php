@@ -6,10 +6,13 @@ use Closure;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Str;
+use Illuminate\View\ComponentAttributeBag;
+use Illuminate\View\ComponentSlot;
 use Spatie\Browsershot\Browsershot;
 use Stringable;
 
@@ -42,9 +45,11 @@ class Raster implements Responsable, Stringable
 
     protected static Closure $browsershot;
 
-    protected static $handlers = [
+    protected static $extensions = [
         'blade.php' => BladeHandler::class,
     ];
+
+    protected $route = 'laravel-raster.render';
 
     /**
      * @param  array<mixed>  $data
@@ -58,7 +63,7 @@ class Raster implements Responsable, Stringable
         $this->path = View::getFinder()->find($this->name);
 
         $extension = Str::after($this->path, '.');
-        if (! $handler = static::$handlers[$extension] ?? null) {
+        if (! $handler = static::$extensions[$extension] ?? null) {
             throw new \Exception('Unsupported view type: '.$extension);
         }
         $this->handler = new $handler($this);
@@ -72,6 +77,11 @@ class Raster implements Responsable, Stringable
     public function path(): string
     {
         return $this->path;
+    }
+
+    public function handler(): BaseHandler
+    {
+        return $this->handler;
     }
 
     public function request(): Request
@@ -191,9 +201,48 @@ class Raster implements Responsable, Stringable
         return $renderImage();
     }
 
+    /**
+     * @param  array<mixed>  $data
+     */
     protected function renderHtml(): string
     {
-        return $this->handler->renderHtml($this->name, $this->data);
+        $layout = config('raster.layout');
+
+        View::share('raster', $this);
+        $html = $this->renderView($layout, [], $this->renderView($this->name(), $this->data()));
+        View::share('raster', null);
+
+        return $html;
+    }
+
+    /**
+     * @param  array<mixed>  $data
+     */
+    protected function renderView(string $name, array $data, ?string $slot = null): string
+    {
+        if (Str::before($name, '.') === 'components') {
+            return Blade::render(<<<'HTML'
+                <x-dynamic-component :component="$name" :attributes="$data">
+                    {{ $slot }}
+                </x-dynamic-component>
+            HTML, [
+                'name' => Str::after($name, 'components.'),
+                'data' => new ComponentAttributeBag($data),
+                'slot' => new ComponentSlot($slot ?? ''),
+            ]);
+        }
+
+        if ($slot) {
+            return Blade::render(<<<'HTML'
+                @extends($name, $data)
+                @section('slot', $slot)
+            HTML, [
+                'name' => $name,
+                'data' => $data,
+            ]);
+        }
+
+        return view($name, $data)->render();
     }
 
     protected function renderPreview(string $html): string
@@ -251,15 +300,7 @@ class Raster implements Responsable, Stringable
 
     public function toUrl(): string
     {
-        $params = [
-            'name' => $this->name,
-            'data' => app('url')->formatParameters($this->data),
-            'width' => $this->width ?? null,
-            'basis' => $this->basis ?? null,
-            'scale' => $this->scale,
-            'type' => $this->type,
-            'preview' => $this->preview(),
-        ];
+        $params = $this->gatherParams();
 
         $defaults = (new \ReflectionClass($this))
             ->getDefaultProperties();
@@ -268,13 +309,18 @@ class Raster implements Responsable, Stringable
             ->all();
 
         return config('raster.sign_urls')
-            ? URL::signedRoute('laravel-raster.render', $params)
-            : route('laravel-raster.render', $params);
+            ? URL::signedRoute($this->route, $params)
+            : route($this->route, $params);
     }
 
     protected function cacheKey(): string
     {
-        $params = [
+        return 'laravel-raster.'.md5(serialize($this->gatherParams()));
+    }
+
+    protected function gatherParams(): array
+    {
+        return [
             'name' => $this->name,
             'data' => app('url')->formatParameters($this->data),
             'width' => $this->width ?? null,
@@ -283,22 +329,11 @@ class Raster implements Responsable, Stringable
             'type' => $this->type,
             'preview' => $this->preview(),
         ];
-
-        return 'laravel-raster.'.md5(serialize($params));
     }
 
     public function __toString(): string
     {
         return $this->toUrl();
-    }
-
-    /**
-     * @param  array<mixed>  $args
-     * @return array<mixed>
-     */
-    public function injectParams(...$params): array
-    {
-        return $this->handler->injectParams($params);
     }
 
     public function isAutomaticMode(): bool
@@ -316,8 +351,8 @@ class Raster implements Responsable, Stringable
         static::$browsershot = $browsershot;
     }
 
-    public static function handler(string $extension, string $class): void
+    public static function extension(string $extension, string $class): void
     {
-        static::$handlers[$extension] = $class;
+        static::$extensions[$extension] = $class;
     }
 }
