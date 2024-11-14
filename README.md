@@ -1,4 +1,4 @@
-# Laravel Raster
+# Raster
 
 Easily rasterize views and components to images by dropping in a directive and fetching a URL. Automatic scaling, caching, protection and preview mode. Zero configuration.
 
