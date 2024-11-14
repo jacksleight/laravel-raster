@@ -119,26 +119,19 @@ The following options can be set with the directive or by chaining methods on to
 
 * **width (int)**  
   Width of the generated image.
+* **height (int, auto)**  
+  Height of the generated image.
 * **basis (int)**  
   [Viewport basis](#viewport-basis) of the generated image. 
 * **scale (int, 1)**  
-  Scale factor of the generated image (1, 2 or 3).
+  Scale of the generated image.
 * **type (string, png)**  
-  Type of the generated image (`png` or `jpeg`).
+  Type of the generated image (`png`, `jpeg` or `pdf`).
 * **preview (bool, false)**  
   Enable [preview mode](#preview-mode).
 * **cache (bool|int, false)**  
   Cache image generation, `true` for forever or `int` for seconds.  
   Cannot be set from a route parameter.
-
-```php
-raster('blog.hero', ['post' => $post])
-    ->width(1000)
-    ->basis(700)
-    ->scale(2)
-    ->type('jpeg')
-    ->preview(true);
-```
 
 ## Viewport Basis
 

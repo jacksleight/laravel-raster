@@ -33,6 +33,8 @@ class Raster implements Responsable, Stringable
 
     protected ?int $width;
 
+    protected ?int $height;
+
     protected ?int $basis;
 
     protected int $scale = 1;
@@ -115,6 +117,17 @@ class Raster implements Responsable, Stringable
         return $this->width;
     }
 
+    public function height(?int $height = null): static|int|null
+    {
+        if (func_num_args() > 0) {
+            $this->height = $height;
+
+            return $this;
+        }
+
+        return $this->height;
+    }
+
     public function basis(?int $basis = null): static|int|null
     {
         if (func_num_args() > 0) {
@@ -182,6 +195,9 @@ class Raster implements Responsable, Stringable
 
         if (! isset($this->width)) {
             throw new \Exception('Width must be set');
+        }
+        if ($this->type === 'pdf' && ! isset($this->height)) {
+            throw new \Exception('Height must be set for PDF output');
         }
 
         if ($this->preview) {
@@ -254,14 +270,31 @@ class Raster implements Responsable, Stringable
     {
         $callback = static::$browsershot ?? fn ($browsershot) => $browsershot;
 
-        return $callback(new Browsershot)
+        $raster = $callback(new Browsershot)
             ->setHtml($html)
             ->setOption('addStyleTag', json_encode(['content' => $this->makeStyle()]))
+            ->showBackground();
+
+        if ($this->type === 'pdf') {
+            $width = ($this->width / 96 * 25.4) * $this->scale;
+            $height = ($this->height / 96 * 25.4) * $this->scale;
+
+            return $raster
+                ->paperSize($width, $height)
+                ->scale($this->scale)
+                ->pages(1)
+                ->pdf();
+        }
+
+        if (isset($this->height)) {
+            $raster->windowSize($this->width, $this->height);
+        } else {
+            $raster->windowSize($this->width, 1)->fullPage();
+        }
+
+        return $raster
             ->deviceScaleFactor($this->scale)
-            ->windowSize($this->width, 1)
             ->setScreenshotType($this->type)
-            ->showBackground()
-            ->fullPage()
             ->screenshot();
     }
 
@@ -292,6 +325,7 @@ class Raster implements Responsable, Stringable
             $this->preview => 'text/html',
             $this->type === 'jpeg' => 'image/jpeg',
             $this->type === 'png' => 'image/png',
+            $this->type === 'pdf' => 'application/pdf',
             default => throw new \Exception('Unsupported image type: '.$this->type),
         };
 
@@ -324,6 +358,7 @@ class Raster implements Responsable, Stringable
             'name' => $this->name,
             'data' => app('url')->formatParameters($this->data),
             'width' => $this->width ?? null,
+            'height' => $this->height ?? null,
             'basis' => $this->basis ?? null,
             'scale' => $this->scale,
             'type' => $this->type,

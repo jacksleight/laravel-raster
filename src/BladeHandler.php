@@ -31,6 +31,7 @@ class BladeHandler extends BaseHandler
             ->only([
                 'data',
                 'width',
+                'height',
                 'basis',
                 'scale',
                 'type',
