@@ -1,4 +1,4 @@
-# Laravel Raster
+# Raster
 
 Easily rasterize views and components to images by dropping in a directive and fetching a URL. Automatic scaling, caching, protection and preview mode. Zero configuration.
 
@@ -159,3 +159,7 @@ Raster::browsershot(fn ($browsershot) => $browsershot
     ->waitUntilNetworkIdle()
 );
 ```
+
+## Sponsoring 
+
+This package is completely free to use. However fixing bugs, adding features and helping users takes time and effort. If you find this useful and would like to support its development any [contribution](https://github.com/sponsors/jacksleight) would be greatly appreciated. Thanks! 🙂
