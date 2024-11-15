@@ -1,6 +1,6 @@
 # Raster
 
-Rasterise views and components to images by simply adding a directive and fetching the URL. Automatic scaling, caching, protection and preview mode. Zero configuration (unless you need it).
+Rasterise views and components to images by simply adding a directive and fetching the URL. Automatic routing, scaling, caching, protection and preview mode. Zero configuration (unless you need it).
 
 ## Installation
 
@@ -132,6 +132,8 @@ The following options can be set with the directive or by chaining methods on to
   Enable [preview mode](#preview-mode).
 * **cache (bool|int, false)**  
   Cache image generation, `true` for forever or `int` for seconds.
+
+With PDF output a height is required, it will only contain one page, and dimensions are still pixels not mm/inches. If you're looking to generate actual documents from views I highly recommend checking out [spatie/laravel-pdf](https://github.com/spatie/laravel-pdf).
 
 ## Viewport Basis
 
