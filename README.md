@@ -22,9 +22,10 @@ php artisan vendor:publish --tag="raster-config"
 
 ### Layout Setup
 
-The views will be rendered inside a layout view where you can load any required CSS and other assets. By default this is a component called `layouts.raster`, but you can change that in the config file.
+The views will be rendered inside a layout view where you can load any required CSS and other assets. By default this is a component called `layouts.raster`, but you can change it in the config file.
 
 ```blade
+{{-- resources/views/components/layouts/raster.blade.php --}}
 <!DOCTYPE html>
 <html>
     <head>
