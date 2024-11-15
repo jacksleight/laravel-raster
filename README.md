@@ -128,6 +128,8 @@ The following options can be set with the directive or by chaining methods on to
   Scale of the generated image.
 * **type (string, png)**  
   Type of the generated image (`png`, `jpeg` or `pdf`).
+* **data (array)**  
+  Array of data to pass to the view.
 * **preview (bool, false)**  
   Enable [preview mode](#preview-mode).
 * **cache (bool|int, false)**  
