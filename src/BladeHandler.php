@@ -26,8 +26,7 @@ class BladeHandler extends BaseHandler
         }
 
         $input = $this->raster->request()->all();
-        $params = collect($input)
-            ->merge($params)
+        $merged = collect([...$params, ...$input])
             ->only([
                 'data',
                 'width',
@@ -41,10 +40,10 @@ class BladeHandler extends BaseHandler
 
         $data = $params['data'] ?? null;
         if ($data instanceof Closure) {
-            $params['data'] = app()->call($data, $input['data'] ?? []);
+            $merged['data'] = app()->call($data, $input['data'] ?? []);
         }
 
-        $params->each(fn ($value, $name) => $this->raster->{$name}($value));
+        $merged->each(fn ($value, $name) => $this->raster->{$name}($value));
 
         return $this->raster->data();
     }

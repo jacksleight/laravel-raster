@@ -130,8 +130,7 @@ The following options can be set with the directive or by chaining methods on to
 * **preview (bool, false)**  
   Enable [preview mode](#preview-mode).
 * **cache (bool|int, false)**  
-  Cache image generation, `true` for forever or `int` for seconds.  
-  Cannot be set from a route parameter.
+  Cache image generation, `true` for forever or `int` for seconds.
 
 ## Viewport Basis
 

@@ -363,6 +363,7 @@ class Raster implements Responsable, Stringable
             'scale' => $this->scale,
             'type' => $this->type,
             'preview' => $this->preview(),
+            'cache' => $this->cache,
         ];
     }
 
