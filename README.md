@@ -41,7 +41,7 @@ The views will be rendered inside a layout view where you can load any required 
 
 ### Automatic Mode
 
-To make a view rasteriseable simply implement the `@raster` directive and then generate a URL to your image using the `raster()` helper. The data closure receives any parameters passed in the URL and should return an array of data to pass to the view.
+To make a view rasterizeable simply implement the `@raster` directive and then generate a URL to your image using the `raster()` helper. The data closure receives any parameters passed in the URL and should return an array of data to pass to the view.
 
 ```blade
 {{-- resources/views/blog/hero.blade.php --}}
