@@ -132,10 +132,21 @@ The following options can be set with the directive or by chaining methods on to
   Array of data to pass to the view.
 * **preview (bool, false)**  
   Enable [preview mode](#preview-mode).
-* **cache (bool|int, false)**  
-  Cache image generation, `true` for forever or `int` for seconds.
 
 With PDF output a height is required, it will only contain one page, and dimensions are still pixels not mm/inches. If you're looking to generate actual documents from views I highly recommend checking out [spatie/laravel-pdf](https://github.com/spatie/laravel-pdf).
+
+# Caching
+
+* **cache (bool, false)**  
+  Enable caching of image generation.
+* **cacheFor (int)**  
+  Cache time to live in seconds.
+* **cacheKey (string|array)**  
+  Cache key. If an array is provided that will hashed to generate a key.
+
+The `cache` option can also be used as a shortcut. Pass an integer to enable caching and set the for value, pass a string or array to enable caching and set the key value.
+
+Cache options cannot be passed as URL parameters.
 
 ## Viewport Basis
 

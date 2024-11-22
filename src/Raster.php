@@ -43,7 +43,11 @@ class Raster implements Responsable, Stringable
 
     protected bool $preview = false;
 
-    protected bool|int $cache = false;
+    protected bool $cache = false;
+
+    protected ?int $cacheFor;
+
+    protected string|array|null $cacheKey;
 
     protected static Closure $browsershot;
 
@@ -61,7 +65,6 @@ class Raster implements Responsable, Stringable
         $this->name = $name;
         $this->data = $data;
         $this->request = $request;
-        $this->cache = config('raster.cache');
 
         $this->path = View::getFinder()->find($this->name);
 
@@ -173,15 +176,44 @@ class Raster implements Responsable, Stringable
         return $this->preview;
     }
 
-    public function cache(bool|int|null $cache = null): static|bool|int|null
+    public function cache(bool|int|string|array|null $cache = null): static|bool
     {
         if (func_num_args() > 0) {
+            if (is_int($cache)) {
+                $this->cacheFor($cache);
+                $cache = true;
+            } elseif (is_string($cache) || is_array($cache)) {
+                $this->cacheKey($cache);
+                $cache = true;
+            }
             $this->cache = $cache ?? false;
 
             return $this;
         }
 
         return $this->cache;
+    }
+
+    public function cacheFor(?int $cacheFor = null): static|int
+    {
+        if (func_num_args() > 0) {
+            $this->cacheFor = $cacheFor;
+
+            return $this;
+        }
+
+        return $this->cacheFor;
+    }
+
+    public function cacheKey(string|array|null $cacheKey = null): static|string|array|null
+    {
+        if (func_num_args() > 0) {
+            $this->cacheKey = $cacheKey;
+
+            return $this;
+        }
+
+        return $this->cacheKey;
     }
 
     public function render(): string
@@ -207,12 +239,14 @@ class Raster implements Responsable, Stringable
 
         $renderImage = fn () => $this->renderImage($html);
 
-        $cacheKey = $this->cacheKey();
-        $cacheStore = Cache::store(config('raster.cache_store'));
-        if ($this->cache === true) {
-            return $cacheStore->rememberForever($cacheKey, $renderImage);
-        } elseif (is_int($this->cache)) {
-            return $cacheStore->remember($cacheKey, $this->cache, $renderImage);
+        if (config('raster.cache', false) && $this->cache) {
+            $cacheKey = $this->generateCacheKey();
+            $cacheStore = Cache::store(config('raster.cache_store'));
+            if (isset($this->cacheFor)) {
+                return $cacheStore->remember($cacheKey, $this->cacheFor, $renderImage);
+            } else {
+                return $cacheStore->rememberForever($cacheKey, $renderImage);
+            }
         }
 
         return $renderImage();
@@ -348,9 +382,19 @@ class Raster implements Responsable, Stringable
             : route($this->route, $params);
     }
 
-    protected function cacheKey(): string
+    protected function generateCacheKey(): string
     {
-        return 'laravel-raster.'.md5(serialize($this->gatherParams()));
+        if (isset($this->cacheKey)) {
+            if (is_string($this->cacheKey)) {
+                return $this->cacheKey;
+            } else {
+                $data = $this->cacheKey;
+            }
+        } else {
+            $data = $this->gatherParams();
+        }
+
+        return 'laravel-raster.'.md5(serialize($data));
     }
 
     protected function gatherParams(): array
@@ -364,7 +408,6 @@ class Raster implements Responsable, Stringable
             'scale' => $this->scale,
             'type' => $this->type,
             'preview' => $this->preview(),
-            'cache' => $this->cache,
         ];
     }
 
