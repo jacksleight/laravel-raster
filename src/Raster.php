@@ -61,6 +61,7 @@ class Raster implements Responsable, Stringable
         $this->name = $name;
         $this->data = $data;
         $this->request = $request;
+        $this->cache = config('raster.cache');
 
         $this->path = View::getFinder()->find($this->name);
 
