@@ -91,7 +91,9 @@ If you would like more control over the routing and how the requests are handled
 use JackSleight\LaravelRaster\Raster;
 
 Route::get('/blog/{post}/hero', function (Post $post) {
-    return Raster::make('blog.hero', ['post' => $post])->width(1000);
+    return Raster::make('blog.hero')
+        ->data(['post' => $post])
+        ->width(1000);
 })->name('blog.hero');
 ```
 

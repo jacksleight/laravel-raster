@@ -8,6 +8,6 @@ if (! function_exists('raster')) {
      */
     function raster(string $name, array $data = []): Raster
     {
-        return new Raster($name, $data);
+        return Raster::make($name)->data($data);
     }
 }

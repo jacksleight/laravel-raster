@@ -57,18 +57,22 @@ class Raster implements Responsable, Stringable
 
     protected $route = 'laravel-raster.render';
 
-    public static function make(string $name, array $data = [], ?Request $request = null): static
+    public static function make(string $name): static
     {
-        return new static($name, $data, $request);
+        return new static($name);
+    }
+
+    public static function makeFromRequest(?Request $request): static
+    {
+        return new static($request->route()->parameter('name'), $request);
     }
 
     /**
      * @param  array<mixed>  $data
      */
-    public function __construct(string $name, array $data = [], ?Request $request = null)
+    protected function __construct(string $name, ?Request $request = null)
     {
         $this->name = $name;
-        $this->data = $data;
         $this->request = $request;
 
         $this->path = View::getFinder()->find($this->name);
