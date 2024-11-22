@@ -57,6 +57,11 @@ class Raster implements Responsable, Stringable
 
     protected $route = 'laravel-raster.render';
 
+    public static function make(string $name, array $data = [], ?Request $request = null): static
+    {
+        return new static($name, $data, $request);
+    }
+
     /**
      * @param  array<mixed>  $data
      */

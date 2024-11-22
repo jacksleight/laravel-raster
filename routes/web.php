@@ -10,6 +10,6 @@ Route::group(['as' => 'laravel-raster.'], function () {
             abort(401);
         }
 
-        return new Raster($name, request: $request);
+        return Raster::make($name, request: $request);
     })->name('render');
 });
