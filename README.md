@@ -137,7 +137,7 @@ The following options can be set with the directive or by chaining methods on to
 
 With PDF output a height is required, it will only contain one page, and dimensions are still pixels not mm/inches. If you're looking to generate actual documents from views I highly recommend checking out [spatie/laravel-pdf](https://github.com/spatie/laravel-pdf).
 
-## Caching
+### Caching
 
 The following caching options can be set with the directive or by chaining methods on to the object. Cache options cannot be passed as URL parameters. You can globally disable caching by setting the `RASTER_CACHE` env var to `false`. By default the `file` cache store is used to cache rendered images, you can change this by setting the `RASTER_CACHE_STORE` env var.
 
