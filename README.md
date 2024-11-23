@@ -137,9 +137,9 @@ The following options can be set with the directive or by chaining methods on to
 
 With PDF output a height is required, it will only contain one page, and dimensions are still pixels not mm/inches. If you're looking to generate actual documents from views I highly recommend checking out [spatie/laravel-pdf](https://github.com/spatie/laravel-pdf).
 
-### Caching
+## Caching
 
-The following options can be set with the directive or by chaining methods on to the object. Cache options cannot be passed as URL parameters.
+The following caching options can be set with the directive or by chaining methods on to the object. Cache options cannot be passed as URL parameters. You can globally disable caching by setting the `RASTER_CACHE` env var to `false`. By default the `file` cache store is used to cache rendered images, you can change this by setting the `RASTER_CACHE_STORE` env var.
 
 * **cache (bool, false)**  
   Enable caching of image generation.
@@ -148,7 +148,7 @@ The following options can be set with the directive or by chaining methods on to
 * **cacheKey (string|array)**  
   Cache key. If an array is provided it will be hashed to generate a key.
 
-The `cache` option can also be used as a shortcut. Pass an integer to enable caching and set the for value, pass a string or array to enable caching and set the key value.
+The `cache` option can also be used as a shortcut. Pass an integer to enable caching and set the `cacheFor` value, pass a string or array to enable caching and set the `cacheKey` value.
 
 ## Viewport Basis
 
@@ -162,7 +162,7 @@ In preview mode the HTML will be returned from the response but with all the app
 
 ## Security & URL Signing
 
-Only views that implement the `@raster` directive can be rasterised in automatic mode, an error will be thrown before execution if they don't. It's also recommended to enable URL signing on production to ensure they can't be tampered with. You can do this by setting the `RASTER_SIGN_URLS` .env var to `true`.
+Only views that implement the `@raster` directive can be rasterised in automatic mode, an error will be thrown before execution if they don't. It's also recommended to enable URL signing on production to ensure they can't be tampered with. You can do this by setting the `RASTER_SIGN_URLS` env var to `true`.
 
 ## Customising Browsershot
 
