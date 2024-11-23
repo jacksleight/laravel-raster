@@ -248,7 +248,7 @@ class Raster implements Responsable, Stringable
 
         $renderImage = fn () => $this->renderImage($html);
 
-        if (config('raster.cache', false) && $this->cache) {
+        if (config('raster.cache') && $this->cache) {
             $cacheKey = $this->generateCacheKey();
             $cacheStore = Cache::store(config('raster.cache_store'));
             if (isset($this->cacheFor)) {
