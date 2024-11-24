@@ -139,16 +139,18 @@ With PDF output a height is required, it will only contain one page, and dimensi
 
 ### Caching
 
-The following caching options can be set with the directive or by chaining methods on to the object. Cache options cannot be passed as URL parameters. You can globally disable caching by setting the `RASTER_CACHE` env var to `false`. By default the `file` cache store is used to cache rendered images, you can change this by setting the `RASTER_CACHE_STORE` env var.
+The following caching options can be set with the directive or by chaining methods on to the object. The `cacheId` cannot be passed as a URL parameter. You can globally disable caching by setting the `RASTER_CACHE` env var to `false`. By default the cache will be stored in `storage/app/raster`, you can change this by setting the `RASTER_CACHE_DISK` env var to a dedicated raster cache disk.
 
 * **cache (bool, false)**  
   Enable caching of image generation.
-* **cacheFor (int)**  
-  Cache time to live in seconds.
-* **cacheKey (string|array)**  
-  Cache key. If an array is provided it will be hashed to generate a key.
+* **cacheId (string, '_')**  
+  Cache file path identifier (optional, see below).
 
-The `cache` option can also be used as a shortcut. Pass an integer to enable caching and set the `cacheFor` value, pass a string or array to enable caching and set the `cacheKey` value.
+Cached files will be stored using the follwing path pattern:
+
+```
+[viewName]/[cacheId]/[paramsHash].[extension]
+```
 
 ## Viewport Basis
 

@@ -36,10 +36,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Store
+    | Cache Disk
     |--------------------------------------------------------------------------
     */
 
-    'cache_store' => env('RASTER_CACHE_STORE', config('cache.default')),
+    'cache_disk' => env('RASTER_CACHE_DISK'),
 
 ];
