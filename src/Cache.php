@@ -58,12 +58,10 @@ class Cache
 
     protected function getPath(string $name, string $id, array $params)
     {
-        $type = $params['type'];
-        $extension = match ($type) {
+        $extension = match ($params['type']) {
             'jpeg' => 'jpg',
             'png' => 'png',
             'pdf' => 'pdf',
-            default => $type,
         };
 
         return $name.'/'.$id.'/'.md5(serialize($params)).'.'.$extension;
