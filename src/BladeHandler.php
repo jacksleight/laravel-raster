@@ -31,8 +31,8 @@ class BladeHandler extends BaseHandler
         if (($params['data'] ?? null) instanceof Closure) {
             $merged['data'] = app()->call($params['data'], $input['data'] ?? []);
         }
-        if (($params['cacheKey'] ?? null) instanceof Closure) {
-            $merged['cacheKey'] = app()->call($params['cacheKey'], $merged['data'] ?? []);
+        if (($params['cacheId'] ?? null) instanceof Closure) {
+            $merged['cacheId'] = app()->call($params['cacheId'], $merged['data'] ?? []);
         }
 
         $merged->each(fn ($value, $name) => $this->raster->{$name}($value));
