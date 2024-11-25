@@ -227,7 +227,7 @@ class Raster implements Responsable, Stringable
 
         $cache = app(Cache::class);
         $params = $this->gatherParams();
-        $shouldCache = config('raster.cache') && $this->cache;
+        $shouldCache = config('raster.cache.enabled') && $this->cache;
 
         if ($shouldCache && $data = $cache->get($this->name, $this->cacheId, $params)) {
             return $data;

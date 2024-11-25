@@ -9,17 +9,17 @@ class Cache
 {
     protected Filesystem $files;
 
-    protected ?int $filePermission;
+    protected ?string $directory;
 
-    public function __construct(Filesystem $files, ?int $filePermission = null)
+    public function __construct(Filesystem $files, ?string $directory = null)
     {
         $this->files = $files;
-        $this->filePermission = $filePermission;
+        $this->directory = $directory;
     }
 
     public function get(string $name, string $id, array $params)
     {
-        $path = $this->getPath($name, $id, $params);
+        $path = $this->getFilePath($name, $id, $params);
 
         if ($this->files->exists($path)) {
             return $this->files->get($path);
@@ -28,7 +28,7 @@ class Cache
 
     public function put(string $name, string $id, array $params, string $data)
     {
-        $path = $this->getPath($name, $id, $params);
+        $path = $this->getFilePath($name, $id, $params);
 
         $directory = dirname($path);
         if (! $this->files->exists($directory)) {
@@ -42,21 +42,28 @@ class Cache
     {
         foreach (Arr::wrap($names) as $name) {
             foreach (Arr::wrap($ids) as $id) {
-                $directory = $name.'/'.$id;
-
-                $this->files->deleteDirectory($directory);
+                $this->files->deleteDirectory($this->getDirectoryPath($name, $id));
             }
         }
     }
 
     public function flush()
     {
-        foreach ($this->files->directories() as $directory) {
+        if (! $this->files->exists($this->directory)) {
+            return;
+        }
+
+        foreach ($this->files->directories($this->directory) as $directory) {
             $this->files->deleteDirectory($directory);
         }
     }
 
-    protected function getPath(string $name, string $id, array $params)
+    protected function getDirectoryPath(string $name, string $id)
+    {
+        return $this->directory.'/'.$name.'/'.$id;
+    }
+
+    protected function getFilePath(string $name, string $id, array $params)
     {
         $extension = match ($params['type']) {
             'jpeg' => 'jpg',
@@ -64,6 +71,6 @@ class Cache
             'pdf' => 'pdf',
         };
 
-        return $name.'/'.$id.'/'.md5(serialize($params)).'.'.$extension;
+        return $this->directory.'/'.$name.'/'.$id.'/'.md5(serialize($params)).'.'.$extension;
     }
 }

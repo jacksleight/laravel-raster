@@ -11,15 +11,14 @@ class ServiceProvider extends BaseServiceProvider
     public function register(): void
     {
         $this->app->singleton(Cache::class, function () {
-            $config = config('raster.cache_disk');
-            $disk = $config
-                ? Storage::disk($config)
-                : Storage::build([
+            $config = config('raster.cache');
+
+            return $config['disk']
+                ? new Cache(Storage::disk($config['disk']), $config['path'])
+                : new Cache(Storage::build([
                     'driver' => 'local',
                     'root' => storage_path('app/raster'),
-                ]);
-
-            return new Cache($disk);
+                ]));
         });
     }
 
