@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0 (2024-11-25)
+
+- [new] Disk based caching
+
 ## 0.2.0 (2024-11-22)
 
 - [new] Global cache toggle
