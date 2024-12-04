@@ -1,8 +1,12 @@
 # Changelog
 
-## 0.2.1 (2024-12-04)
+## 0.3.1 (2024-12-04)
 
 - [fix] View file paths with dots
+
+## 0.3.0 (2024-11-25)
+
+- [new] Disk based caching
 
 ## 0.2.0 (2024-11-22)
 

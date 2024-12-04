@@ -3,10 +3,25 @@
 namespace JackSleight\LaravelRaster;
 
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    public function register(): void
+    {
+        $this->app->singleton(Cache::class, function () {
+            $config = config('raster.cache');
+
+            return $config['disk']
+                ? new Cache(Storage::disk($config['disk']), $config['path'])
+                : new Cache(Storage::build([
+                    'driver' => 'local',
+                    'root' => storage_path('app/raster'),
+                ]));
+        });
+    }
+
     public function boot(): void
     {
         $this->publishes([

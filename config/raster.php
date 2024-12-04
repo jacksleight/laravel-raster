@@ -28,18 +28,14 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Enabled
+    | Cache
     |--------------------------------------------------------------------------
     */
 
-    'cache' => env('RASTER_CACHE', true),
-
-    /*
-    |--------------------------------------------------------------------------
-    | Cache Store
-    |--------------------------------------------------------------------------
-    */
-
-    'cache_store' => env('RASTER_CACHE_STORE', config('cache.default')),
+    'cache' => [
+        'enabled' => env('RASTER_CACHE_ENABLED', true),
+        'disk' => env('RASTER_CACHE_DISK'),
+        'path' => env('RASTER_CACHE_PATH'),
+    ],
 
 ];
