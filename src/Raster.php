@@ -77,7 +77,7 @@ class Raster implements Responsable, Stringable
 
         $this->path = View::getFinder()->find($this->name);
 
-        $extension = Str::after($this->path, '.');
+        $extension = Str::after(pathinfo($this->path, PATHINFO_BASENAME), '.');
         if (! $handler = static::$extensions[$extension] ?? null) {
             throw new \Exception('Unsupported view type: '.$extension);
         }
