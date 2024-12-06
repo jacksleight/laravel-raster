@@ -40,6 +40,8 @@ class Raster implements Responsable, Stringable
 
     protected string $type = 'png';
 
+    protected string $file;
+
     protected bool $preview = false;
 
     protected bool $cache = false;
@@ -169,6 +171,17 @@ class Raster implements Responsable, Stringable
         }
 
         return $this->type;
+    }
+
+    public function file(?string $file = null): static|string
+    {
+        if (func_num_args() > 0) {
+            $this->file = $file;
+
+            return $this;
+        }
+
+        return $this->file;
     }
 
     public function preview(?bool $preview = null): static|bool
@@ -349,15 +362,25 @@ class Raster implements Responsable, Stringable
     {
         $data = $this->render();
 
+        if ($this->preview) {
+            return response($data);
+        }
+
         $mime = match (true) {
-            $this->preview => 'text/html',
             $this->type === 'jpeg' => 'image/jpeg',
             $this->type === 'png' => 'image/png',
             $this->type === 'pdf' => 'application/pdf',
             default => throw new \Exception('Unsupported image type: '.$this->type),
         };
+        $ext = $this->type === 'jpeg' ? 'jpg' : $this->type;
 
-        return response($data)->header('Content-Type', $mime);
+        $file = isset($this->file)
+            ? ($this->file.'.'.$ext)
+            : (Str::replace('.', '-', $this->name).'.'.$ext);
+
+        return response($data)
+            ->header('Content-Type', $mime)
+            ->header('Content-Disposition', 'inline; filename="'.$file.'"');
     }
 
     public function toUrl(): string

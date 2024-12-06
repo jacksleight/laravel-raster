@@ -130,6 +130,8 @@ The following options can be set with the directive or by chaining methods on to
   Scale of the generated image.
 * **type (string, png)**  
   Type of the generated image (`png`, `jpeg` or `pdf`).
+* **file (string)**  
+  File name of the response, excluding extension.
 * **data (array)**  
   Array of data to pass to the view.
 * **preview (bool, false)**  
