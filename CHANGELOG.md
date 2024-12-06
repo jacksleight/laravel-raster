@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0 (2024-12-06)
+
+- [new] File name option
+
 ## 0.3.1 (2024-12-04)
 
 - [fix] View file paths with dots
