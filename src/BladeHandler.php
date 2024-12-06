@@ -27,16 +27,16 @@ class BladeHandler extends BaseHandler
 
         $input = $this->raster->request()->all();
         $merged = collect([...$params, ...$input]);
-
-        if (($params['data'] ?? null) instanceof Closure) {
-            $merged['data'] = app()->call($params['data'], $input['data'] ?? []);
-        }
-        if (($params['cacheId'] ?? null) instanceof Closure) {
-            $merged['cacheId'] = app()->call($params['cacheId'], $merged['data'] ?? []);
-        }
-        if (($params['file'] ?? null) instanceof Closure) {
-            $merged['file'] = app()->call($params['file'], $merged['data'] ?? []);
-        }
+        collect($params)
+            ->keys()
+            ->unshift('data')
+            ->unique()
+            ->each(function ($name) use ($params, $input, &$merged) {
+                if ($params[$name] instanceof Closure) {
+                    $pass = $name === 'data' ? $input : $merged;
+                    $merged[$name] = app()->call($params[$name], $pass['data'] ?? []);
+                }
+            });
 
         $merged->each(fn ($value, $name) => $this->raster->{$name}($value));
 
