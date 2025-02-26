@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.2 (2025-02-26)
+
+- Laravel 12 support
+
 ## 0.4.1 (2025-01-06)
 
 - Browsershot 5 support
