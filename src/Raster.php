@@ -348,7 +348,7 @@ class Raster implements Responsable, Stringable
         return collect([
             ':root { font-size: '.$fontSize.'px; }',
         ])->when($preview, fn ($style) => $style->merge([
-            ':root { min-height: 100vh; display: flex; }',
+            ':root { min-height: 100vh; display: flex; background: black; }',
             'body { width: '.$this->width.'px; margin: auto; }',
         ]))->join(' ');
     }
