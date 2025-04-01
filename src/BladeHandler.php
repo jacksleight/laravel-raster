@@ -32,7 +32,7 @@ class BladeHandler extends BaseHandler
             ->unshift('data')
             ->unique()
             ->each(function ($name) use ($params, $input, &$merged) {
-                if ($params[$name] instanceof Closure) {
+                if (($params[$name] ?? null) instanceof Closure) {
                     $pass = $name === 'data' ? $input : $merged;
                     $merged[$name] = app()->call($params[$name], $pass['data'] ?? []);
                 }
