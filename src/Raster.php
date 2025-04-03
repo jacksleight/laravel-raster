@@ -228,7 +228,11 @@ class Raster implements Responsable, Stringable
         $html = $this->renderHtml();
 
         if (! isset($this->width)) {
-            throw new \Exception('Width must be set');
+            if (isset($this->basis)) {
+                $this->width = $this->basis;
+            } else {
+                throw new \Exception('Width or basis must be set');
+            }
         }
         if ($this->type === 'pdf' && ! isset($this->height)) {
             throw new \Exception('Height must be set for PDF output');
