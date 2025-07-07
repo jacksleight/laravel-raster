@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.0 (2025-07-07)
+
+- [new] Add transparent option
+
 ## 0.4.2 (2025-02-26)
 
 - Laravel 12 support

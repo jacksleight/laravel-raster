@@ -40,6 +40,8 @@ class Raster implements Responsable, Stringable
 
     protected string $type = 'png';
 
+    protected bool $transparent = false;
+
     protected string $file;
 
     protected bool $preview = false;
@@ -48,7 +50,9 @@ class Raster implements Responsable, Stringable
 
     protected string $cacheId = '_';
 
-    protected static Closure $browsershot;
+    protected static ?Closure $browsershot = null;
+
+    protected static ?Closure $renderer = null;
 
     protected static $extensions = [
         'blade.php' => BladeHandler::class,
@@ -217,6 +221,17 @@ class Raster implements Responsable, Stringable
         return $this->cacheId;
     }
 
+    public function transparent(?bool $transparent = null): static|bool
+    {
+        if (func_num_args() > 0) {
+            $this->transparent = $transparent ?? false;
+
+            return $this;
+        }
+
+        return $this->transparent;
+    }
+
     public function render(): string
     {
         if ($this->isAutomaticMode() && ! $this->hasFingerprint()) {
@@ -278,6 +293,10 @@ class Raster implements Responsable, Stringable
      */
     protected function renderView(string $name, array $data, ?string $slot = null): string
     {
+        if (static::$renderer) {
+            return (string) (static::$renderer)($name, $data, $slot);
+        }
+
         if (Str::before($name, '.') === 'components') {
             return Blade::render(<<<'HTML'
                 <x-dynamic-component :component="$name" :attributes="$data">
@@ -317,8 +336,13 @@ class Raster implements Responsable, Stringable
 
         $raster = $callback(new Browsershot)
             ->setHtml($html)
-            ->setOption('addStyleTag', json_encode(['content' => $this->makeStyle()]))
-            ->showBackground();
+            ->setOption('addStyleTag', json_encode(['content' => $this->makeStyle()]));
+
+        if ($this->transparent) {
+            $raster->hideBackground();
+        } else {
+            $raster->showBackground();
+        }
 
         if ($this->type === 'pdf') {
             $width = ($this->width / 96 * 25.4) * $this->scale;
@@ -412,6 +436,7 @@ class Raster implements Responsable, Stringable
             'basis' => $this->basis ?? null,
             'scale' => $this->scale,
             'type' => $this->type,
+            'transparent' => $this->transparent,
             'preview' => $this->preview,
             'cache' => $this->cache,
         ];
@@ -435,6 +460,11 @@ class Raster implements Responsable, Stringable
     public static function browsershot(Closure $browsershot): void
     {
         static::$browsershot = $browsershot;
+    }
+
+    public static function renderer(Closure $renderer): void
+    {
+        static::$renderer = $renderer;
     }
 
     public static function extension(string $extension, string $class): void
