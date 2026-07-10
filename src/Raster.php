@@ -9,6 +9,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\ComponentSlot;
@@ -316,6 +317,7 @@ class Raster implements Responsable, Stringable
             HTML, [
                 'name' => $name,
                 'data' => $data,
+                'slot' => new HtmlString($slot),
             ]);
         }
 
