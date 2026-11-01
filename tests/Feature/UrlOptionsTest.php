@@ -53,3 +53,15 @@ test('option closures apply without a url option', function () {
     expect(state($this->get('/raster/closures')))
         ->width->toBe(200);
 });
+
+test('boolean url options accept false', function () {
+    expect(state($this->get('/raster/probe?transparent=false&cache=false')))
+        ->transparent->toBeFalse()
+        ->cache->toBeFalse();
+});
+
+test('boolean url options accept true', function () {
+    expect(state($this->get('/raster/probe?transparent=true&cache=1')))
+        ->transparent->toBeTrue()
+        ->cache->toBeTrue();
+});

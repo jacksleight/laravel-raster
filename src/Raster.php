@@ -454,7 +454,11 @@ class Raster implements Responsable, Stringable
 
     public function requestParams(): array
     {
-        return $this->request->only($this->params);
+        return collect($this->request->only($this->params))
+            ->map(fn ($value, $name) => is_bool($this->{$name} ?? null)
+                ? $this->request->boolean($name)
+                : $value)
+            ->all();
     }
 
     public function __toString(): string
