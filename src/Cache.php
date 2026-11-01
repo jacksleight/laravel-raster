@@ -9,12 +9,12 @@ class Cache
 {
     protected Filesystem $files;
 
-    protected ?string $directory;
+    protected string $directory;
 
     public function __construct(Filesystem $files, ?string $directory = null)
     {
         $this->files = $files;
-        $this->directory = $directory;
+        $this->directory = $directory ?? '';
     }
 
     public function get(string $name, string $id, array $params)

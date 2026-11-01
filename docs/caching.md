@@ -28,7 +28,7 @@ Cached files are keyed on every option and data parameter, so a change to the UR
 
 ## Storage
 
-By default the cache will be stored locally in `storage/app/raster`. You can store it on any filesystem disk instead by setting the `RASTER_CACHE_DISK` and `RASTER_CACHE_PATH` env vars:
+By default the cache will be stored locally in `storage/app/raster`. You can store it on any filesystem disk instead by setting the `RASTER_CACHE_DISK` env var, and the directory on that disk with `RASTER_CACHE_PATH`, which defaults to `raster`:
 
 ```env
 RASTER_CACHE_DISK=s3

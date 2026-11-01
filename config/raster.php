@@ -35,7 +35,7 @@ return [
     'cache' => [
         'enabled' => env('RASTER_CACHE_ENABLED', true),
         'disk' => env('RASTER_CACHE_DISK'),
-        'path' => env('RASTER_CACHE_PATH'),
+        'path' => env('RASTER_CACHE_PATH', 'raster'),
     ],
 
 ];
