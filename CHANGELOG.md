@@ -1,18 +1,22 @@
 # Changelog
 
-## 1.0.0 (Unreleased)
-
-- [new] Brand new [documentation](https://jacksleight.com/code/laravel-raster)
+## 1.0.0 (2026-11-02)
 - [break] Only option parameters are read from the URL, anything else is ignored and `cacheId` can no longer be set there
 - [break] URL options take priority over option closures
 - [break] Cache path defaults to `raster` when a cache disk is set
 - [break] Preview mode no longer posts a `raster.loaded` message
+- [break] Scale below 1 now throws an error rather than being ignored
+- [new] Error messages name the view that failed
 - [fix] Signed URLs and unknown query parameters causing errors
 - [fix] File option missing from generated URLs
 - [fix] Boolean URL options treating `false` as true
 - [fix] Cache flush failing with the default config
 - [fix] Antlers views rendering through the Blade route, they now throw a helpful error
-- PHP 8.2+ is now required
+- [fix] Reading an unset option throwing an error
+- [fix] Unsupported types failing with an unclear error when caching
+- Dropped support for Laravel 10 and 11
+- Browsershot 5.0.5+ is now required
+- Dropped support for PHP 8.1
 
 ## 0.5.2 (2026-07-10)
 
