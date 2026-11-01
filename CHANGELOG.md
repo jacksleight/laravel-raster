@@ -1,5 +1,26 @@
 # Changelog
 
+## 1.0.0 (Unreleased)
+
+- [new] Brand new [documentation](https://jacksleight.com/code/laravel-raster)
+- [break] Only option parameters are read from the URL, anything else is ignored and `cacheId` can no longer be set there
+- [break] URL options take priority over option closures
+- [break] Cache path defaults to `raster` when a cache disk is set
+- [break] Preview mode no longer posts a `raster.loaded` message
+- [fix] Signed URLs and unknown query parameters causing errors
+- [fix] File option missing from generated URLs
+- [fix] Boolean URL options treating `false` as true
+- [fix] Cache flush failing with the default config
+- PHP 8.2+ is now required
+
+## 0.5.2 (2026-07-10)
+
+- [fix] Escaped layout slot content
+
+## 0.5.1 (2026-07-10)
+
+- Laravel 13 support
+
 ## 0.5.0 (2025-07-07)
 
 - [new] Add transparent option
