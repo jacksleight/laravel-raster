@@ -11,6 +11,7 @@
 - [fix] File option missing from generated URLs
 - [fix] Boolean URL options treating `false` as true
 - [fix] Cache flush failing with the default config
+- [fix] Antlers views rendering through the Blade route, they now throw a helpful error
 - PHP 8.2+ is now required
 
 ## 0.5.2 (2026-07-10)
