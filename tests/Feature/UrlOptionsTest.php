@@ -43,3 +43,13 @@ test('file is included in generated urls', function () {
     expect((string) raster('probe')->file('share'))
         ->toContain('file=share');
 });
+
+test('url options beat option closures', function () {
+    expect(state($this->get('/raster/closures?width=300')))
+        ->width->toBe(300);
+});
+
+test('option closures apply without a url option', function () {
+    expect(state($this->get('/raster/closures')))
+        ->width->toBe(200);
+});

@@ -31,6 +31,7 @@ class BladeHandler extends BaseHandler
             ->keys()
             ->unshift('data')
             ->unique()
+            ->reject(fn ($name) => $name !== 'data' && array_key_exists($name, $input))
             ->each(function ($name) use ($params, $input, &$merged) {
                 if (($params[$name] ?? null) instanceof Closure) {
                     $pass = $name === 'data' ? $input : $merged;
