@@ -61,6 +61,19 @@ class Raster implements Responsable, Stringable
 
     protected $route = 'laravel-raster.render';
 
+    protected array $params = [
+        'data',
+        'width',
+        'height',
+        'basis',
+        'scale',
+        'type',
+        'transparent',
+        'file',
+        'preview',
+        'cache',
+    ];
+
     public static function make(string $name): static
     {
         return new static($name);
@@ -432,17 +445,16 @@ class Raster implements Responsable, Stringable
     {
         return [
             'name' => $this->name,
+            ...collect($this->params)
+                ->mapWithKeys(fn ($name) => [$name => $this->{$name} ?? null])
+                ->all(),
             'data' => app('url')->formatParameters($this->data),
-            'width' => $this->width ?? null,
-            'height' => $this->height ?? null,
-            'basis' => $this->basis ?? null,
-            'scale' => $this->scale,
-            'type' => $this->type,
-            'transparent' => $this->transparent,
-            'file' => $this->file ?? null,
-            'preview' => $this->preview,
-            'cache' => $this->cache,
         ];
+    }
+
+    public function requestParams(): array
+    {
+        return $this->request->only($this->params);
     }
 
     public function __toString(): string

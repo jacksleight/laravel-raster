@@ -25,7 +25,7 @@ class BladeHandler extends BaseHandler
             return [];
         }
 
-        $input = $this->raster->request()->all();
+        $input = $this->raster->requestParams();
         $merged = collect([...$params, ...$input]);
         collect($params)
             ->keys()
