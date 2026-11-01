@@ -195,6 +195,10 @@ class Raster implements Responsable, Stringable
     public function type(?string $type = null): static|string
     {
         if (func_num_args() > 0) {
+            if ($type !== null && collect(['png', 'jpeg', 'pdf'])->doesntContain($type)) {
+                throw new \Exception("Cannot rasterise [{$this->name}], type must be png, jpeg or pdf.");
+            }
+
             $this->type = $type ?? 'png';
 
             return $this;
@@ -261,9 +265,9 @@ class Raster implements Responsable, Stringable
     public function render(): string
     {
         if ($this->isAutomaticMode() && ! $this->hasFingerprint()) {
-            throw new \Exception('View must implement raster');
+            throw new \Exception("Cannot rasterise [{$this->name}], views used in automatic mode must implement raster.");
         } elseif ($this->isManualMode() && $this->hasFingerprint()) {
-            throw new \Exception('View must not implement raster');
+            throw new \Exception("Cannot rasterise [{$this->name}], views used in manual mode must not implement raster.");
         }
 
         $html = $this->renderHtml();
@@ -272,11 +276,11 @@ class Raster implements Responsable, Stringable
             if (isset($this->basis)) {
                 $this->width = $this->basis;
             } else {
-                throw new \Exception('Width or basis must be set');
+                throw new \Exception("Cannot rasterise [{$this->name}], width or basis must be set.");
             }
         }
         if ($this->type === 'pdf' && ! isset($this->height)) {
-            throw new \Exception('Height must be set for PDF output');
+            throw new \Exception("Cannot rasterise [{$this->name}], height must be set for PDF output.");
         }
 
         if ($this->preview) {
@@ -422,7 +426,6 @@ class Raster implements Responsable, Stringable
             $this->type === 'jpeg' => 'image/jpeg',
             $this->type === 'png' => 'image/png',
             $this->type === 'pdf' => 'application/pdf',
-            default => throw new \Exception('Unsupported image type: '.$this->type),
         };
         $ext = $this->type === 'jpeg' ? 'jpg' : $this->type;
 
