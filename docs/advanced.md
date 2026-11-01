@@ -48,4 +48,6 @@ use JackSleight\LaravelRaster\Raster;
 Raster::extension('twig', TwigHandler::class);
 ```
 
-A handler extends `JackSleight\LaravelRaster\BaseHandler` and implements `hasFingerprint()`, which checks whether a view has opted in to automatic mode. This is how the [Statamic Raster](https://jacksleight.com/code/statamic-raster) addon adds Antlers support.
+A handler extends `JackSleight\LaravelRaster\BaseHandler` and implements `hasFingerprint()`, which checks whether a view has opted in to automatic mode.
+
+A subclass of `Raster` that declares its own `$extensions` property gets its own list, so the handlers it registers don't apply to the `raster()` helper or the automatic mode route. This is how the [Statamic Raster](https://jacksleight.com/code/statamic-raster) addon adds Antlers support, and why Antlers views throw an error here rather than rendering through the Blade route.

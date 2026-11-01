@@ -96,9 +96,17 @@ class Raster implements Responsable, Stringable
 
         $extension = Str::after(pathinfo($this->path, PATHINFO_BASENAME), '.');
         if (! $handler = static::$extensions[$extension] ?? null) {
-            throw new \Exception('Unsupported view type: '.$extension);
+            throw $this->unsupportedView($extension);
         }
         $this->handler = new $handler($this);
+    }
+
+    protected function unsupportedView(string $extension): \Exception
+    {
+        return new \Exception(match ($extension) {
+            'antlers.html', 'antlers.php' => "Cannot rasterise [{$this->name}], Antlers views are rendered by Statamic Raster, use its route and tags instead.",
+            default => "Cannot rasterise [{$this->name}], [{$extension}] views are not supported, register a handler with Raster::extension().",
+        });
     }
 
     public function name(): string
