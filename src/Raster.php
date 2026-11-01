@@ -439,6 +439,7 @@ class Raster implements Responsable, Stringable
             'scale' => $this->scale,
             'type' => $this->type,
             'transparent' => $this->transparent,
+            'file' => $this->file ?? null,
             'preview' => $this->preview,
             'cache' => $this->cache,
         ];
