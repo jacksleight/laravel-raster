@@ -180,6 +180,10 @@ class Raster implements Responsable, Stringable
     public function scale(?int $scale = null): static|int
     {
         if (func_num_args() > 0) {
+            if ($scale !== null && $scale < 1) {
+                throw new \Exception("Cannot rasterise [{$this->name}], scale must be a whole number of 1 or more, set width below basis to shrink an image.");
+            }
+
             $this->scale = $scale ?? 1;
 
             return $this;
