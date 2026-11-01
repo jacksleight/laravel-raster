@@ -31,11 +31,11 @@ class Raster implements Responsable, Stringable
 
     protected ?Request $request;
 
-    protected ?int $width;
+    protected ?int $width = null;
 
-    protected ?int $height;
+    protected ?int $height = null;
 
-    protected ?int $basis;
+    protected ?int $basis = null;
 
     protected int $scale = 1;
 
@@ -43,7 +43,7 @@ class Raster implements Responsable, Stringable
 
     protected bool $transparent = false;
 
-    protected string $file;
+    protected ?string $file = null;
 
     protected bool $preview = false;
 
@@ -124,7 +124,7 @@ class Raster implements Responsable, Stringable
         return $this->handler;
     }
 
-    public function request(): Request
+    public function request(): ?Request
     {
         return $this->request;
     }
@@ -199,7 +199,7 @@ class Raster implements Responsable, Stringable
         return $this->type;
     }
 
-    public function file(?string $file = null): static|string
+    public function file(?string $file = null): static|string|null
     {
         if (func_num_args() > 0) {
             $this->file = $file;
@@ -235,7 +235,7 @@ class Raster implements Responsable, Stringable
     public function cacheId(?string $cacheId = null): static|string
     {
         if (func_num_args() > 0) {
-            $this->cacheId = $cacheId;
+            $this->cacheId = $cacheId ?? '_';
 
             return $this;
         }
