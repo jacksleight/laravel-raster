@@ -1,5 +1,6 @@
 {
     "name": "jacksleight/laravel-raster",
+    "license": "MIT",
     "autoload": {
         "psr-4": {
             "JackSleight\\LaravelRaster\\": "src"
