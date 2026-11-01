@@ -339,10 +339,7 @@ class Raster implements Responsable, Stringable
 
     protected function renderPreview(string $html): string
     {
-        $style = '<style>'.$this->makeStyle(true).'</style>';
-        $script = "<script>window.parent?.postMessage({ name: 'raster.loaded', rect: document.body.getBoundingClientRect() })</script>";
-
-        return $html.$style.$script;
+        return $html.'<style>'.$this->makeStyle(true).'</style>';
     }
 
     protected function renderImage(string $html): string
