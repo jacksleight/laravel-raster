@@ -36,4 +36,4 @@ Then fetch the URL with the `raster()` helper:
 
 ## Sponsoring 
 
-This package is completely free to use. However fixing bugs, adding features and helping users takes time and effort. If you find this useful and would like to support its development any [contribution](https://github.com/sponsors/jacksleight) would be greatly appreciated. Thanks! 🙂
+This package is completely free to use. However fixing bugs, adding features and helping users takes time and effort. If you find this package useful and would like to support its development any [contribution](https://github.com/sponsors/jacksleight) would be greatly appreciated. Thanks! 🙂
