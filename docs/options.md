@@ -40,7 +40,7 @@ With PDF output a height is required, it will only contain one page, and dimensi
 
 When the basis option is set the image will be generated as if the viewport was that width, but the final image will match the desired width. Here's an example of how that affects output:
 
-![Viewport Basis](https://jacksleight.com/assets/packages/laravel-raster/viewport-basis.jpg)
+![Viewport Basis](https://jacksleight.dev/assets/packages/laravel-raster/viewport-basis.jpg)
 
 This works by adjusting the root font size, so it relies on your layout being sized in `rem` units. It's a handy way to render a design built for one width at another without touching the CSS, and if you only set `basis` the width defaults to match it.
 

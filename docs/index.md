@@ -25,4 +25,4 @@ Either way the [options](options) are the same, as are [caching](caching), [secu
 
 ## Compatibility
 
-Raster works with Antlers views too, when used with the [Statamic Raster](https://jacksleight.com/code/statamic-raster) addon, which builds on this package and adds a few Statamic specific features.
+Raster works with Antlers views too, when used with the [Statamic Raster](https://github.com/jacksleight/statamic-raster/tree/main/docs) addon, which builds on this package and adds a few Statamic specific features.

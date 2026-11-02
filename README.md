@@ -32,7 +32,7 @@ Then fetch the URL with the `raster()` helper:
 
 ## Documentation
 
-[Laravel Raster Documentation](https://jacksleight.com/code/laravel-raster)
+[Laravel Raster Documentation](https://github.com/jacksleight/laravel-raster/tree/main/docs)
 
 ## Sponsoring 
 
