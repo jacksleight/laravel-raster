@@ -9,6 +9,10 @@ test('automatic mode views must implement raster', function () {
         ->toThrow(Exception::class, 'Cannot rasterise [plain], views used in automatic mode must implement raster.');
 });
 
+test('unknown views return a 404', function () {
+    $this->get('/raster/nope')->assertNotFound();
+});
+
 test('manual mode views must not implement raster', function () {
     expect(fn () => Raster::make('probe')->render())
         ->toThrow(Exception::class, 'Cannot rasterise [probe], views used in manual mode must not implement raster.');
